@@ -1,0 +1,9 @@
+Data Modeling:
+--------------
+Demo: 
+PostgreSQL and Autucommit
+Creating a Table with Postgres
+
+#-----------------------------------------------------
+Get Start and Installation PostgreSQL on local machine
+#-----------------------------------------------------
