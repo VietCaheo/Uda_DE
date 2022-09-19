@@ -1,3 +1,7 @@
+#-----------------------------------------------------
+# Get Start and Installation PostgreSQL on local machine
+# file:///C:/Program%20Files/PostgreSQL/14/doc/postgresql/html/tutorial-start.html
+###################################################################################
 """ Data Modeling: """
 # ---------------------------------------------------
 
@@ -156,14 +160,4 @@ except psycopg2.Error as e:
 cur.close()
 conn.close()
 
-
-
-
-
-
-
-#-----------------------------------------------------
-# Get Start and Installation PostgreSQL on local machine
-# file:///C:/Program%20Files/PostgreSQL/14/doc/postgresql/html/tutorial-start.html
-#-----------------------------------------------------
 
