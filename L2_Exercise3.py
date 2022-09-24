@@ -1,8 +1,4 @@
-""" Creating Fact and Dimension Tables with Star Schema
-1. Creat both Fact and Dimension tables
-2. Show how this is a basic element of the Star Schema
-"""
-
+# Import the Library
 import psycopg2
 
 # Create a connection to the database
@@ -23,7 +19,7 @@ conn.set_session(autocommit=True)
 
 # Creat 4 tables for music store, there are 4 tables focus on customer purchases: customer_transactions, customer, store, items_purchased
 
-# Creat the Fact table
+# TODO Creat the Fact table
 try: 
     cur.execute("CREATE TABLE IF NOT EXISTS customer_transactions (customer_id int, store_id int, spent numeric);")
 except psycopg2.Error as e: 
@@ -111,14 +107,13 @@ except psycopg2.Error as e:
     print("Error: Inserting Rows")
     print (e)
 
-# Try do some query;
-# Query1: Find all the customers that spent more than 30$, what did they buy, and if they are rewards member
+# Query 1:  Find all the customers that spent more than 30 dollars, who are they, which store they bought it from, location of the store, what they bought and if they are a rewards member
+
 try: 
-    cur.execute("SELECT name, item_name, rewards FROM ((customer_transactions \
-                                                JOIN customer ON customer.customer_id=customer_transactions.customer_id)\
-                                                JOIN items_purchased ON \
-                                                customer_transactions.customer_id=items_purchased.customer_id)\
-                                                WHERE spent > 30 ;")
+    cur.execute("SELECT name, store.store_id, state FROM ((customer_transactions JOIN customer ON \
+                                                    customer_transactions.customer_id = customer.customer_id) JOIN store\
+                                                    ON customer_transactions.store_id = store.store_id) \
+                                                    WHERE customer_transactions.spent > 30;")
     
     
 except psycopg2.Error as e: 
@@ -130,9 +125,12 @@ while row:
    print(row)
    row = cur.fetchone()
 
-# Query 2 How much did store 1 sell
+
+# Query 2: How much did Customer2 spent
 try: 
-    cur.execute("SELECT store_id, SUM(spent) FROM customer_transactions GROUP BY store_id;")
+    cur.execute("SELECT name, spent FROM (customer_transactions JOIN customer ON \
+                                          customer_transactions.customer_id = customer.customer_id) \
+                                          WHERE customer.customer_id = 2;")
     
     
 except psycopg2.Error as e: 
@@ -144,7 +142,7 @@ while row:
    print(row)
    row = cur.fetchone()
 
-# To drop tables after done
+# Drop the tables that created
 try: 
     cur.execute("DROP table customer_transactions")
 except psycopg2.Error as e: 
@@ -166,8 +164,19 @@ except psycopg2.Error as e:
     print("Error: Dropping table")
     print (e)
 
+# And finally close your cursor and connection
 cur.close()
 conn.close()
+
+
+
+
+
+
+
+
+
+
 
 
 
