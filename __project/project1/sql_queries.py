@@ -18,7 +18,7 @@ user_table_create = ("""CREATE TABLE IF NOT EXISTS users (user_id int, first_nam
 # song_id, title, artist_id, year, duration
 # `song_id` see note above
 # real is `Single-precision floating-point format`
-song_table_create = ("""CREATE TABLE IF NOT EXISTS songs (song_id varchar, title text, artist_id varchar, year int, duration real);""")
+song_table_create = ("""CREATE TABLE IF NOT EXISTS songs (song_id text, title text, artist_id text, year int, duration real);""")
 
 # artist_id, name, location, latitude, longitude
 # note: `real` is enough for latitude and longtitude or not
