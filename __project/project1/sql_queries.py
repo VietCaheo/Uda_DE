@@ -9,7 +9,7 @@ time_table_drop = ("""DROP TABLE IF EXISTS time""")
 
 #songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent
 # [!] datatype regcollation may use for `song_id` and `artist_id`
-songplay_table_create = ("""CREATE TABLE IF NOT EXISTS songplays (songplay_id int, start_time timestamp, user_id int, level varchar, song_id varchar, artist_id varchar, session_id int, location varchar, user_agent text);""")
+songplay_table_create = ("""CREATE TABLE IF NOT EXISTS songplays (songplay_id SERIAL, start_time timestamp, user_id int, level varchar, song_id varchar, artist_id varchar, session_id int, location varchar, user_agent text);""")
 
 # user_id, first_name, last_name, gender, level
 # note: `genre` may more than 1 character
@@ -18,7 +18,7 @@ user_table_create = ("""CREATE TABLE IF NOT EXISTS users (user_id int, first_nam
 # song_id, title, artist_id, year, duration
 # `song_id` see note above
 # real is `Single-precision floating-point format`
-song_table_create = ("""CREATE TABLE IF NOT EXISTS songs (song_id text, title text, artist_id text, year int, duration real);""")
+song_table_create = ("""CREATE TABLE IF NOT EXISTS songs (song_id text, title text, artist_id text, year int, duration double precision);""")
 
 # artist_id, name, location, latitude, longitude
 # note: `real` is enough for latitude and longtitude or not
@@ -46,7 +46,12 @@ time_table_insert = ("""INSERT INTO time (start_time, hour, day, week, month, ye
                           VALUES (%s, %s, %s, %s, %s, %s, %s)""")
 
 # FIND SONGS
-song_select = ("""SELECT songs.title, artists.name, songs.duration \
+
+song_select = ("""SELECT songs.song_id, \
+                         artists.artist_id, \
+                         songs.title, \
+                         artists.name, \
+                         songs.duration \
                   FROM songs JOIN artists ON \
                   songs.artist_id = artists.artist_id
                   WHERE (%s = songs.title) AND \
