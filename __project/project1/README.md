@@ -43,5 +43,22 @@ Dimension Tables
 -> Run Sanity Tests
 
 
+#################
+Referring resource:
+for convert numpy.dt64: https://stackoverflow.com/questions/13703720/converting-between-datetime-timestamp-and-datetime64
+
+
+issue:
+Grab Table Names for Testing
+
+%load_ext sql
+
+"Environment variable $DATABASE_URL not set, and no connect string given.
+Connection info needed in SQLAlchemy format, example:
+               postgresql://username:password@hostname/dbname
+               or an existing connection: dict_keys([])"
+
+
+
 
 

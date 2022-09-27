@@ -42,32 +42,48 @@ def process_log_file(cur, filepath):
 
     # convert timestamp column to datetime
     # get whole frame with raw timestamp columns (upto millisecons)
-    t = df[['ts']]
-    ts_dtime = pd.to_datetime(t.values[0])
+    rawTime = df[['ts']]
 
-    # get serires type for next steps
-    ts_dtime_S = pd.Series(ts_dtime)
+    #first row ts and convert to datetime in pandas
+    ts_dtime_S = []
+
+    # convert whole item in rawTime df
+    for index, row in rawTime.iterrows():
+    #    count += 1
+        ts_dtime = pd.to_datetime(row["ts"])
+        ts_dtime_S.append(pd.Series(ts_dtime))
 
     # insert time data records
     # extract from ts for individual time slicing
     time_data = []
-    time_data.append(ts_dtime_S[0])
-    time_data.append(ts_dtime_S.dt.hour[0])
-    time_data.append(ts_dtime_S.dt.day[0])
-    time_data.append(ts_dtime_S.dt.weekofyear[0])
-    time_data.append(ts_dtime_S.dt.month[0])
-    time_data.append(ts_dtime_S.dt.year[0])
-    time_data.append(ts_dtime_S.dt.weekday[0])
+    time_data_e = []
 
-    # columns using for time_table
+    for ele in ts_dtime_S:
+        time_data_e.append(np.datetime64(ele.values[0]).astype(datetime))
+        time_data_e.append(ele.dt.hour.values[0])
+        time_data_e.append(ele.dt.day.values[0])
+        time_data_e.append(ele.dt.weekofyear.values[0])
+        time_data_e.append(ele.dt.month.values[0])
+        time_data_e.append(ele.dt.year.values[0])
+        time_data_e.append(ele.dt.weekday.values[0])
+        time_data.append(time_data_e)
+        time_data_e = []
+
+    #to see time_data list
+    print(time_data_e)
+    print()
+    print(time_data)
+
     column_labels = ['ts','hour','day','weekofyear','month','year','weekday']
 
-    dict_time=dict(zip(column_labels,time_data))
-    time_df = pd.DataFrame(dict_time,index=['row0'])
+    arr = np.array(time_data)
+    time_df = pd.DataFrame(arr,columns=column_labels)
+    time_df.head()
 
-    # original Uda-template code
+    # insert each time row in time table into the time_table
     for i, row in time_df.iterrows():
         cur.execute(time_table_insert, list(row))
+        #conn.commit()
 
     # load user table
     # columns for user_table
@@ -75,7 +91,10 @@ def process_log_file(cur, filepath):
     df_user_1 = df_user.values[0]
     user_data = df_user_1.tolist()
 
-    user_df =
+    user_column=['userId', 'firstName', 'lastName', 'gender', 'level']
+    user_dict=dict(zip(user_column,user_data))
+
+    user_df = pd.DataFrame(user_dict,index=['row0'])
 
     # insert user records
     for i, row in user_df.iterrows():
@@ -94,8 +113,32 @@ def process_log_file(cur, filepath):
             songid, artistid = None, None
 
         # insert songplay record
-        songplay_data =
-        cur.execute(songplay_table_insert, songplay_data)
+        # userId, firstName, lastName, gender, level
+        # extract from log data
+        df_songplay_aux=df[['ts','userId','level','sessionId','location','userAgent']]
+
+        # to get the first row and transform to a list
+        df_songplay_aux_1 = df_songplay_aux.values[0]
+        songplay_aux_data = df_songplay_aux_1.tolist()
+
+        #convert ts to timestamp, applied above ts_dtime
+        songplay_aux_data[0] = datetime.fromtimestamp(songplay_aux_data[0]/1000)
+
+        #deal with None for songID and artistID
+        if songid is None:
+            songid = 0
+        if artistid is None:
+            artistid = 0
+
+        songplay_aux_data.insert(0,index)
+        songplay_aux_data.insert(4,songid)
+        songplay_aux_data.insert(5,artistid)
+
+        #option1
+        songplay_column = ['songplay_id','ts','userId','level','song_id','artist_id','sessionId','location','userAgent']
+
+        # songplay_data = ()
+        cur.execute(songplay_table_insert, songplay_aux_data)
 
 
 def process_data(cur, conn, filepath, func):
