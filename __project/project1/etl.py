@@ -2,11 +2,15 @@ import os
 import glob
 import psycopg2
 import pandas as pd
+import numpy as np
 from sql_queries import *
 from datetime import datetime
 
 
 def process_song_file(cur, filepath):
+    """
+    Function to load a single json song_data file and extract to DataFrame , then load into tables
+    """
     # open song file
     # to read_json a song. the parameter `filepath` is a sigle
     df = pd.read_json(filepath, lines=True)
@@ -32,8 +36,10 @@ def process_song_file(cur, filepath):
     #insert each table for artist -> conn.commit() for all tables later
     cur.execute(artist_table_insert, artist_data)
 
-
 def process_log_file(cur, filepath):
+    """
+    Function to load a single json log_data file and extract to DataFrame , then load into tables
+    """
     # open log file
     df = pd.read_json(filepath, lines=True)
 
@@ -69,21 +75,20 @@ def process_log_file(cur, filepath):
         time_data.append(time_data_e)
         time_data_e = []
 
-    #to see time_data list
-    print(time_data_e)
-    print()
-    print(time_data)
+    # for debuging:
+    #print(time_data_e)
+    #print()
+    #print(time_data)
 
     column_labels = ['ts','hour','day','weekofyear','month','year','weekday']
 
     arr = np.array(time_data)
     time_df = pd.DataFrame(arr,columns=column_labels)
-    time_df.head()
+    #time_df.head()
 
     # insert each time row in time table into the time_table
     for i, row in time_df.iterrows():
         cur.execute(time_table_insert, list(row))
-        #conn.commit()
 
     # load user table
     # columns for user_table
@@ -96,14 +101,13 @@ def process_log_file(cur, filepath):
 
     user_df = pd.DataFrame(user_dict,index=['row0'])
 
-    # insert user records
+    # Insert user records
     for i, row in user_df.iterrows():
         cur.execute(user_table_insert, row)
 
-    # insert songplay records
+    # Insert songplay records
+    # To filtering criterial points: song's title; artist and length with songplay_table
     for index, row in df.iterrows():
-
-        # get songid and artistid from song and artist tables
         cur.execute(song_select, (row.song, row.artist, row.length))
         results = cur.fetchone()
 
@@ -112,53 +116,34 @@ def process_log_file(cur, filepath):
         else:
             songid, artistid = None, None
 
-        # insert songplay record
-        # userId, firstName, lastName, gender, level
-        # extract from log data
-        df_songplay_aux=df[['ts','userId','level','sessionId','location','userAgent']]
+        # Insert songplay record
+        # Except songid, artistid were get from result, another get from df that read from a Json file
+        songplay_data = [row.ts, row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent]
 
-        # to get the first row and transform to a list
-        df_songplay_aux_1 = df_songplay_aux.values[0]
-        songplay_aux_data = df_songplay_aux_1.tolist()
-
-        #convert ts to timestamp, applied above ts_dtime
-        songplay_aux_data[0] = datetime.fromtimestamp(songplay_aux_data[0]/1000)
-
-        #deal with None for songID and artistID
-        if songid is None:
-            songid = 0
-        if artistid is None:
-            artistid = 0
-
-        songplay_aux_data.insert(0,index)
-        songplay_aux_data.insert(4,songid)
-        songplay_aux_data.insert(5,artistid)
-
-        #option1
-        songplay_column = ['songplay_id','ts','userId','level','song_id','artist_id','sessionId','location','userAgent']
-
-        # songplay_data = ()
-        cur.execute(songplay_table_insert, songplay_aux_data)
-
+        cur.execute(songplay_table_insert, songplay_data)
 
 def process_data(cur, conn, filepath, func):
-    # get all files matching extension from directory
+    """
+    Function for helping get all json data file in folders,
+        and provide a loop over whole data files in same kind.
+    """
+
+    # Get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
         files = glob.glob(os.path.join(root,'*.json'))
         for f in files :
             all_files.append(os.path.abspath(f))
 
-    # get total number of files found
+    # Get total number of files found
     num_files = len(all_files)
     print('{} files found in {}'.format(num_files, filepath))
 
-    # iterate over files and process
+    # Iterate over files and process
     for i, datafile in enumerate(all_files, 1):
         func(cur, datafile)
         conn.commit()
         print('{}/{} files processed.'.format(i, num_files))
-
 
 def main():
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
@@ -168,7 +153,6 @@ def main():
     process_data(cur, conn, filepath='data/log_data', func=process_log_file)
 
     conn.close()
-
 
 if __name__ == "__main__":
     main()
