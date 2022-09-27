@@ -8,14 +8,14 @@ time_table_drop = ("""DROP TABLE IF EXISTS time""")
 # CREATE TABLES
 songplay_table_create = ("""CREATE TABLE IF NOT EXISTS songplays \
                               (songplay_id SERIAL PRIMARY KEY, \
-                              start_time bigint NOT NULL, \
-                              user_id int, level varchar, \
+                              start_time bigint REFERENCES time(start_time) NOT NULL, \
+                              user_id int, \
+                              level varchar, \
                               song_id varchar REFERENCES songs(song_id), \
                               artist_id varchar REFERENCES artists(artist_id), \
                               session_id int, location varchar, user_agent text); """)
 
 # user_id, first_name, last_name, gender, level
-# note: `genre` may more than 1 character
 user_table_create = ("""CREATE TABLE IF NOT EXISTS users \
                         (user_id int PRIMARY KEY, \
                         first_name varchar, \
@@ -24,19 +24,34 @@ user_table_create = ("""CREATE TABLE IF NOT EXISTS users \
                         level varchar);""")
 
 # song_id, title, artist_id, year, duration
-# `song_id` see note above
-song_table_create = ("""CREATE TABLE IF NOT EXISTS songs (song_id text PRIMARY KEY, title text, artist_id text NOT NULL, year int, duration double precision);""")
+song_table_create = ("""CREATE TABLE IF NOT EXISTS songs \
+                        (song_id text PRIMARY KEY, \
+                        title text, \
+                        artist_id text NOT NULL, \
+                        year int, duration double precision);""")
 
 
 # artist_id, name, location, latitude, longitude
-artist_table_create = ("""CREATE TABLE IF NOT EXISTS artists (artist_id varchar PRIMARY KEY, name text, location text, latitude real, longitude real);""")
+artist_table_create = ("""CREATE TABLE IF NOT EXISTS artists \
+                          (artist_id varchar PRIMARY KEY, \
+                           name text, \
+                           location text, \
+                           latitude real, \
+                           longitude real);""")
 
 # start_time, hour, day, week, month, year, weekday
-time_table_create = ("""CREATE TABLE IF NOT EXISTS time (start_time bigint PRIMARY KEY, hour int, day int, week int, month int, year int, weekday int);""")
+time_table_create = ("""CREATE TABLE IF NOT EXISTS time 
+                        (start_time bigint PRIMARY KEY, \
+                        hour int, day int, week int, \
+                        month int, year int, \
+                        weekday int);""")
 
 # INSERT RECORDS
 # Let use auto index
-songplay_table_insert = ("""INSERT INTO songplays (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent) \
+songplay_table_insert = ("""INSERT INTO songplays \
+                            (start_time, user_id, \
+                             level, song_id, artist_id, \
+                             session_id, location, user_agent) \
                              VALUES (%s, %s, %s, %s, %s, %s, %s, %s) ;""")
 
 
@@ -44,13 +59,12 @@ songplay_table_insert = ("""INSERT INTO songplays (start_time, user_id, level, s
 user_table_insert = ("""INSERT INTO users (user_id, first_name, last_name, gender, level) \
                           VALUES (%s, %s, %s, %s, %s) \
                           ON CONFLICT (user_id) DO UPDATE \
-                          SET user_id=EXCLUDED.user_id;""")
+                          SET level=EXCLUDED.level;""")
 
 # Note: song_id is primary key
 song_table_insert = ("""INSERT INTO songs (song_id, title, artist_id, year, duration) \
                         VALUES (%s, %s, %s, %s, %s) \
-                        ON CONFLICT (song_id) DO UPDATE \
-                        SET song_id=EXCLUDED.song_id;""")
+                        ON CONFLICT (song_id) DO NOTHING;""")
 
 # Note: artist_id is primary key
 artist_table_insert = ("""INSERT INTO artists (artist_id, name, location, latitude, longitude) \
