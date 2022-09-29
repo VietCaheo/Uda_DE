@@ -42,6 +42,14 @@ How Cassandra reads, writes, updates and deletes the data:
 Python driver for Cassandra:
     https://docs.datastax.com/en/developer/python-driver/3.25/
 
+
+7. PRIMARY KEY:
+    -> is how each row can be uniquely identified and how the data is distributed across the nodes (or severs) in our system
+    -> the first element of the PRIMARY KEY is the PARTITION KEY (which will determine the distribution)
+    -> made up of either just the PARTITION KEY or wit the addtion of CLUSTERING COLUMNS
+    -> PARTITION KEY row value will be hashed (turn into a number) and store in the node in the system.
+    https://docs.datastax.com/en/archived/cql/3.3/cql/cql_using/useSimplePrimaryKeyConcept.html#useSimplePrimaryKeyConcept
+
 """
 
 
