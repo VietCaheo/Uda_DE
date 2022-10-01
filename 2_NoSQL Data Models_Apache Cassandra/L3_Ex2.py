@@ -2,7 +2,6 @@
 
 import cassandra
 
-# Let first creat a connection to the database
 from cassandra.cluster import Cluster
 try: 
     cluster = Cluster(['127.0.0.1']) #If you have a locally installed Apache Cassandra instance
@@ -10,7 +9,7 @@ try:
 except Exception as e:
     print(e)
 
-# Let's create a keyspace to do our work in
+# Creat Key Space to work in
 try:
     session.execute("""
     CREATE KEYSPACE IF NOT EXISTS udacity 
@@ -21,28 +20,23 @@ try:
 except Exception as e:
     print(e)
 
-# Connect to our Keyspace. Compare this to how we had to create a new session in PostgreSQ
+# Connect to Key Space
 try:
     session.set_keyspace('udacity')
 except Exception as e:
     print(e)
 
-# Table Name: music_library
-# column 1: Year
-# column 2: Artist Name
-# column 3: Album Name
-# Column 4: City
-# PRIMARY KEY(year)
-
-# This case make table with PRIMARY KEY by `year`
+# To give every album in the music_library that was created by a given artist
+# select * from music_library WHERE artist_name="The Beatles
+# this time using only year for PRIMARY KEY
 query = "CREATE TABLE IF NOT EXISTS music_library "
-query = query + "(year int, city text, artist_name text, album_name text, PRIMARY KEY (artist_name))"
+query = query + "(year int, city text, artist_name text, album_name text, PRIMARY KEY (year))"
 try:
     session.execute(query)
 except Exception as e:
     print(e)
 
-# Insert data
+#Insert rows to table
 query = "INSERT INTO music_library (year, artist_name, album_name, city)"
 query = query + " VALUES (%s, %s, %s, %s)"
 
@@ -71,8 +65,7 @@ try:
 except Exception as e:
     print(e)
 
-
-# Let's Validate our Data Model -< this will not return enough 2 rows, because PRIMARY KEY  (year) is not unique
+# to validate the table just created
 query = "select * from music_library WHERE artist_name='The Beatles'"
 try:
     rows = session.execute(query)
@@ -82,17 +75,16 @@ except Exception as e:
 for row in rows:
     print (row.year, row.artist_name, row.album_name, row.city)
 
-# this time creat table with cluster (year, album_name) to make PRIMARY KEY
-# or it's able to choose the another column to become unique cluster
-query = "CREATE TABLE IF NOT EXISTS music_library1 "
+# Creat new table using Coposite key (clustering by year and another to make PRIMARY KEY)
+query = "CREATE TABLE IF NOT EXISTS music_library "
 query = query + "(artist_name text, year int, album_name text, city text, PRIMARY KEY (artist_name,album_name))"
 try:
     session.execute(query)
 except Exception as e:
     print(e)
 
-#insert into table
-query = "INSERT INTO music_library1 (artist_name, year, album_name, city)"
+# insert to table
+query = "INSERT INTO music_library (artist_name, year, album_name, city)"
 query = query + " VALUES (%s, %s, %s, %s)"
 
 try:
@@ -121,30 +113,13 @@ except Exception as e:
     print(e)
 
 # Validate again
-query = "select * from music_library1 WHERE artist_name='The Beatles'"
+query = "select * from music_library WHERE artist_name='The Beatles'"
 try:
     rows = session.execute(query)
 except Exception as e:
     print(e)
     
 for row in rows:
-    print (row.artist_name, row.year, row.album_name, row.city)
+    print (row.year, row.artist_name, row.album_name, row.city)
 
-#drop the table
-#drop the table
-query = "drop table music_library"
-try:
-    rows = session.execute(query)
-except Exception as e:
-    print(e)
-
-query = "drop table music_library1"
-try:
-    rows = session.execute(query)
-except Exception as e:
-    print(e)
-
-# Close session
-session.shutdown()
-cluster.shutdown()
 

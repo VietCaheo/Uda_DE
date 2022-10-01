@@ -47,8 +47,25 @@ Python driver for Cassandra:
     -> is how each row can be uniquely identified and how the data is distributed across the nodes (or severs) in our system
     -> the first element of the PRIMARY KEY is the PARTITION KEY (which will determine the distribution)
     -> made up of either just the PARTITION KEY or wit the addtion of CLUSTERING COLUMNS
+    
     -> PARTITION KEY row value will be hashed (turn into a number) and store in the node in the system.
     https://docs.datastax.com/en/archived/cql/3.3/cql/cql_using/useSimplePrimaryKeyConcept.html#useSimplePrimaryKeyConcept
+
+    -> PARTITION KEY  can also be COMPOSITE  (aka COMPOUND): generated from more columns
+    https://stackoverflow.com/questions/24949676/difference-between-partition-key-composite-key-and-clustering-key-in-cassandra
+
+8. Clustering Columns:
+    -> will determine the sort order within a Partition.
+    -> sort data in DESC order
+    -> More than one clustering column can be added.
+    https://docs.datastax.com/en/cql/3.3/cql/cql_using/useCompoundPrimaryKeyConcept.html
+
+9. WHERE clause:
+    -> Data Modeling on Apache Cassandra in query focused, and that focus needs to be on the WHERE clause.
+    -> The PARTITION KEY must be included to execute queries and any CLUSTERING COLUMNS can be used in the order they appear in PRIMARY KEY.
+    -> [!avoid to use]  ALLOW FILTERING  <<-- it's risky...
+        https://www.datastax.com/blog/allow-filtering-explained
+
 
 """
 
