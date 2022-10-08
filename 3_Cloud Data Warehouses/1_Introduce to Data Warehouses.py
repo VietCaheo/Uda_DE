@@ -60,6 +60,15 @@ Review about ETL:
     The most interested in real world
    """
 
+""" 
+OLAP cube: Online Analytic Processing
+    Slice: reduce N-dimensions to N-1 dimensions by restricting one dimension to a sigle value.
+    Dice: same dimensions, but computing a sub-cube by restricting, some of the values of the dimensions.
+    Roll-up: Aggregate or combines values and reduces number of rows or coloums
+
+OLAP cube query optimization:
+    
+"""
 
 
 
