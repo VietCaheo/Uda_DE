@@ -67,9 +67,13 @@ OLAP cube: Online Analytic Processing
     Roll-up: Aggregate or combines values and reduces number of rows or coloums
 
 OLAP cube query optimization:
-    
+
 """
 
+""" 
+Data Warehouse Technologies
+    using ROLAP: Relational Online Analytical Processing (ROLAP) and using columnar storage for performance
+ """
 
 
 
