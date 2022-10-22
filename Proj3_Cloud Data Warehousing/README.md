@@ -17,14 +17,14 @@ Datasets:
 
 Schema for Song Play Analysis:
 Fact table:
-songplays: records in event data associated with song plays
+`songplays`: records in event data associated with song plays
 	columns: `songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent`
 
 Dimension Tables:
-users
-songs
-artists
-time
+`users`
+`songs`
+`artists`
+`time`
 
 Project template files:
 	creat_table.py
