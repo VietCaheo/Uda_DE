@@ -20,23 +20,23 @@ time_table_drop = "DROP TABLE IF EXISTS time"
 # Some field in log_data and song_data has length different: as `song` and `song>title`
 # use bigint for `time`, instead of timestamp
 staging_events_table_create= ("""CREATE TABLE IF NOT EXISTS staging_events \
-                               (artist varchar(160), \
-                                auth varchar(15), \
-                                firstName varchar(30), \
+                               (artist varchar, \
+                                auth varchar, \
+                                firstName varchar(50), \
                                 gender char, \
-                                ItemInSession smallint, \
-                                lastName varchar(30), \
+                                itemInSession smallint, \
+                                lastName varchar(50), \
                                 length double precision, \
                                 level varchar(8), \
                                 location varchar(50), \
                                 method varchar(5), \
-                                page varchar(15), \
+                                page varchar(30), \
                                 registration bigint, \
                                 sessionId smallint, \
-                                song varchar(100), \
+                                song varchar(220), \
                                 status smallint, \
                                 ts bigint, \
-                                userAgent varchar(180), \
+                                userAgent varchar(200), \
                                 userId smallint); """)
 
 staging_songs_table_create = (""" CREATE TABLE IF NOT EXISTS staging_songs \
@@ -45,10 +45,10 @@ staging_songs_table_create = (""" CREATE TABLE IF NOT EXISTS staging_songs \
                             artist_id varchar(18), \
                             artist_latitude real, \
                             artist_longitude real, \
-                            artist_location varchar(50), \
-                            artist_name varchar(100), \
+                            artist_location varchar(220), \
+                            artist_name varchar(220), \
                             duration double precision, \
-                            title varchar(60), \
+                            title varchar(180), \
                             year smallint); """)
 
 songplay_table_create = (""" CREATE TABLE IF NOT EXISTS songplays \
@@ -69,7 +69,7 @@ user_table_create = ("""CREATE TABLE IF NOT EXISTS users \
 
 song_table_create = ("""CREATE TABLE IF NOT EXISTS songs \
                         (song_id varchar(18) PRIMARY KEY, \
-                        title varchar(60), \
+                        title varchar(180), \
                         artist_id varchar(18) NOT NULL, \
                         year smallint, duration double precision); """)
 
@@ -91,7 +91,7 @@ time_table_create = ("""CREATE TABLE IF NOT EXISTS time
 # COMPUPDATE OFF: automatic compression is disabled.
 staging_events_copy = ("""  COPY staging_events \
                             FROM 's3://udacity-dend/log_data' \
-                            CREDENTIALS 'aws_iam_role=arn:aws:iam::800432697646:role/myRedshiftRole' \
+                            CREDENTIALS 'aws_iam_role={}' \
                             REGION 'us-west-2' \
                             COMPUPDATE OFF \
                             JSON 's3://udacity-dend/log_json_path.json' \
@@ -99,10 +99,10 @@ staging_events_copy = ("""  COPY staging_events \
 
 staging_songs_copy = ("""  COPY staging_songs \
                             FROM 's3://udacity-dend/song_data' \
-                            CREDENTIALS 'aws_iam_role=arn:aws:iam::800432697646:role/myRedshiftRole' \
+                            CREDENTIALS 'aws_iam_role={}' \
                             REGION 'us-west-2' \
                             COMPUPDATE OFF \
-                            JSON 's3://udacity-dend/log_json_path.json' \
+                            JSON 'auto' \
                             """).format(config.get('IAM_ROLE', 'ARN'))
 
 # FINAL TABLES
