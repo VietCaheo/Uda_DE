@@ -6,6 +6,7 @@ config = configparser.ConfigParser()
 config.read('dwh.cfg')
 
 # DROP TABLES
+
 staging_events_table_drop = "DROP TABLE IF EXISTS staging_events"
 staging_songs_table_drop = "DROP TABLE IF EXISTS staging_songs"
 songplay_table_drop = "DROP TABLE IF EXISTS songplays"
@@ -18,7 +19,7 @@ time_table_drop = "DROP TABLE IF EXISTS time"
 # pay much attention for Data_Type
 # Some field in log_data and song_data has length different: as `song` and `song>title`
 # use bigint for `time`, instead of timestamp
-staging_events_table_create= ("""CREAT TABLE IF NOT EXISTS staging_events \
+staging_events_table_create= ("""CREATE TABLE IF NOT EXISTS staging_events \
                                (artist varchar(160), \
                                 auth varchar(15), \
                                 firstName varchar(30), \
@@ -51,7 +52,7 @@ staging_songs_table_create = (""" CREATE TABLE IF NOT EXISTS staging_songs \
                             year smallint); """)
 
 songplay_table_create = (""" CREATE TABLE IF NOT EXISTS songplays \
-                              (songplay_id SERIAL PRIMARY KEY, \
+                              (songplay_id INT IDENTITY(0,1) PRIMARY KEY, \
                               start_time bigint REFERENCES time(start_time) NOT NULL, \
                               user_id int, \
                               level varchar(8), \
@@ -87,6 +88,7 @@ time_table_create = ("""CREATE TABLE IF NOT EXISTS time
 
 # STAGING TABLES
 # should use us-west-2 for the same REGION of S3 that located
+# COMPUPDATE OFF: automatic compression is disabled.
 staging_events_copy = ("""  COPY staging_events \
                             FROM 's3://udacity-dend/log_data' \
                             CREDENTIALS 'aws_iam_role=arn:aws:iam::800432697646:role/myRedshiftRole' \
@@ -105,22 +107,22 @@ staging_songs_copy = ("""  COPY staging_songs \
 
 # FINAL TABLES
 
-songplay_table_insert = (""" INSERT INTO songplays \
+songplay_table_insert = ("""INSERT INTO songplays \
                             (start_time, user_id, \
                              level, song_id, artist_id, \
                              session_id, location, user_agent) \
                              VALUES (%s, %s, %s, %s, %s, %s, %s, %s) ; """)
 
-user_table_insert = (""" INSERT INTO users (user_id, first_name, last_name, gender, level) \
+user_table_insert = ("""INSERT INTO users (user_id, first_name, last_name, gender, level) \
                           VALUES (%s, %s, %s, %s, %s) \
                           ON CONFLICT (user_id) DO UPDATE \
                           SET level=EXCLUDED.level; """)
 
-song_table_insert = (""" INSERT INTO songs (song_id, title, artist_id, year, duration) \
+song_table_insert = ("""INSERT INTO songs (song_id, title, artist_id, year, duration) \
                         VALUES (%s, %s, %s, %s, %s) \
                         ON CONFLICT (song_id) DO NOTHING; """)
 
-artist_table_insert = (""" INSERT INTO artists (artist_id, name, location, latitude, longitude) \
+artist_table_insert = ("""INSERT INTO artists (artist_id, name, location, latitude, longitude) \
                           VALUES (%s, %s, %s, %s, %s) \
                           ON CONFLICT (artist_id) DO UPDATE \
                           SET artist_id=EXCLUDED.artist_id; """)
