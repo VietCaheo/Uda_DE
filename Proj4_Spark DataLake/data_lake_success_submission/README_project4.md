@@ -49,6 +49,27 @@ https://knowledge.udacity.com/questions/677823
 ####
 songplays join _1_: https://knowledge.udacity.com/questions/340824
 
+# Mentor review recommendation:
+TOP FIVE DIFFERENCES BETWEEN DATA LAKES AND DATA WAREHOUSES
+https://www.blue-granite.com/blog/bid/402596/top-five-differences-between-data-lakes-and-data-warehouses
+
+What Is A Data Lake? A Super-Simple Explanation For Anyone
+https://www.forbes.com/sites/bernardmarr/2018/08/27/what-is-a-data-lake-a-super-simple-explanation-for-anyone/
+#4f61b70d76e0
+
+When Should We Load Relational Data to a Data Lake?
+https://www.sqlchick.com/entries/2018/11/13/when-should-we-load-relational-data-to-a-data-lake
+
+### Regarding the Apache Parquet
+What is Apache Parquet and why you should use it
+https://www.upsolver.com/blog/apache-parquet-why-use
+
+### Regarding about Partitioning:
+Partitioning helps queries to run much faster. See this article on detailed info on partition, https://mungingdata.com/apache-spark/partitionby/
+
+
+
+
 
 
 
