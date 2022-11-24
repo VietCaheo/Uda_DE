@@ -1,0 +1,64 @@
+Overview:
+---------
+ - Make the case for data lakes
+ - how data lakes are different from a data warehouse
+ - the various options for implementing data lakes on AWS
+ - How data lake work
+ - Issues with data lake
+ 
+Unstructed Data & big Data:
+    - HDFS: Hadoop File System
+    - Associated tools: Mapreduce/ Pig/ Hive/ Impala/ Spark.
+    - "Schema-On-Read" approaching
+
+New Roles and Advanced Analytics:
+    - data warehouse design follows a very well-architected path to make: clean, consistent, performant model
+    - "single rigid representation of data"
+    - analytics: ML/ NLP <<-- need to access the raw data totally different from a star schema
+ 
+    -> "The data lake shares the same goals of the data warehouse of supporting business insights beyond the day-to-day transaction handling. However, it is there to provide what the data warehouse could not achieve"
+ 
+Big Data Effect #1: ETL replacement: 
+        + `Big data clusters` replace ETL Grids
+        + `Big data clusters` use the same HW for storage and processing
+        
+Big Data Effect #2: Schema-On-Read: 
+    -> Schema Inference
+    -> Control Types and Malformed Data
+    -> DataFrame API
+    -> SQL without a DB (using Spark SQL commands, DataFrame as SQL table)
+ 
+Big Data Effect #3: (Un-/Semi-) Structured support:
+    -> Spark can read/write files 
+        + text-basedw format: csv, json, text
+        + binary formats: Avro, Parquet (columnar)
+        + cimpressed formats: gzip/ snappy
+    -> read/ write from a variety of file systems
+        + local file
+        + HDFS
+        + S3
+    -> read/ write from a variety of databases
+        + SQL through JDBC
+        + NoSQL: MongoDB, Canssandra, Neo4j
+    -> All exposed in a sigle abstraction, the dataframe, and could be prcessed with SQL
+
+
+20. DataLake concept
+    -> Data is keep "as-is", we dont do ETL , do ELT (keep original format of data, do transform later)
+    -> Data is processed with schema-on-read, no predefined star-schema is there before transaction
+    -> Massive parallelelism & scalability come out of the box with all big data processing tools. Columnar Storage using Parquet without expensive MPP databases.
+    -> Using package like Mlib, Graph for Advanced Analytics such as : ML/ Graph Analytics & recommender systems are supported.
+
+or by short: Big data that enable data lake implementing like this
+    Distributed data storage
+    Support for Unstructed data
+    Schema on Read insead if ETL processes
+    Parallelism in data processing using Spark and DataFrame.
+
+
+22. Data Lake Options on AWS:
+    -> Storage Options:  HDFS, S3
+    -> Processing Option: Spark/ Hive/ Flink/ Serverless Processing
+    -> unmangaged, managed vendor solutions: EMR of AWS/ other vendor: Cloudera, HortonWorks, DataBricks ...
+
+
