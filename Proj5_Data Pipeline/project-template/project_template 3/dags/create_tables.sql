@@ -73,6 +73,9 @@ CREATE TABLE IF NOT EXISTS public."time" (
 	CONSTRAINT time_pkey PRIMARY KEY (start_time)
 ) ;
 
+-- Drop the un-expected data firstly
+DROP TABLE public.users;
+
 CREATE TABLE IF NOT EXISTS public.users (
 	userid int4 NOT NULL,
 	first_name varchar(256),

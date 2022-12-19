@@ -38,8 +38,7 @@ dag = DAG('udac_example_dag',
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
-# creat table if not exist
-
+# creat tables if not exist
 creat_tables_task = PostgresOperator(
     task_id='creat_tables',
     dag=dag,
@@ -47,12 +46,13 @@ creat_tables_task = PostgresOperator(
     postgres_conn_id='redshift'
 )
 
+# Note: it's existing log json path of log data
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
     dag=dag,
     table='staging_events',
     s3_key="log_data",
-    filetype='json'
+    s3_json_path = "s3://udacity-dend/log_json_path.json"
 )
 
 #  try run with small data set in song log
@@ -61,7 +61,7 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     dag=dag,
     table='staging_songs',
     s3_key="song_data/A/A/A",
-    filetype='json'
+    s3_json_path = "auto"
 )
 
 #  the fact table implicity allow append only

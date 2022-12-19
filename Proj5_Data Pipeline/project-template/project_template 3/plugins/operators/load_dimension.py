@@ -21,11 +21,11 @@ class LoadDimensionOperator(BaseOperator):
         super(LoadDimensionOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id
         self.table = table
-        
+        self.insert_mode = insert_mode
         self.sql_insert_table = sql_insert_table
 
     def execute(self, context):
-        self.log.info('LoadDimensionOperator is implementing here ...')
+        self.log.info("LoadDimensionOperator for dim_table {} is in progress >>>>>>>>>>>>> ...".format(self.table))
         redshift_hook = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
         # do switching mode truncate or append
@@ -37,8 +37,6 @@ class LoadDimensionOperator(BaseOperator):
             redshift_hook.run(" TRUNCATE TABLE  {}".format(self.table))
             redshift_hook.run(" INSERT INTO {} {} ".format(self.table, self.sql_insert_table))
 
-        self.log.info("Finished to LoadDimensionOperator for the dim_table {}".format(self.table))
+        self.log.info("<<<<<<<<<<<<<<<<< .......................Finished to loading dim_table {}".format(self.table))
         self.log.info("Move to Run Quality Check ... >>>")
-
-    
 

@@ -1,7 +1,7 @@
 class SqlQueries:
     songplay_table_insert = ("""
         SELECT
-                md5(events.sessionid || events.start_time) songplay_id,
+                md5(NVL2(events.sessionid,events.sessionid::char,'') ||NVL2(events.start_time,events.start_time::char,'')) songplay_id,
                 events.start_time, 
                 events.userid, 
                 events.level, 

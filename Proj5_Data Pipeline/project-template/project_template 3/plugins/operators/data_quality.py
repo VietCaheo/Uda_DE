@@ -45,4 +45,4 @@ class DataQualityOperator(BaseOperator):
             if (len(record_list[0][0]) < 1):
                 raise ValueError("Check failed. table {} has nothing row".format(table))
 
-        self.log.info("Finished DataQuality check for table list {}".format(self.tables))            
+        self.log.info("Finished DataQuality check for table list {}".format(self.tables))
