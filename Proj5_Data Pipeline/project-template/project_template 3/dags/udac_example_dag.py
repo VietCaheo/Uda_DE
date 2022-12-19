@@ -53,34 +53,52 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     filetype='json'
 )
 
+#  the fact table implicity allow append only
 load_songplays_table = LoadFactOperator(
     task_id='Load_songplays_fact_table',
-    dag=dag
+    dag=dag,
+    table = 'songplays',
+    sql_insert_table = SqlQueries.songplay_table_insert
 )
 
+# dim tables can be choose `truncate` or `append` when inserting data
 load_user_dimension_table = LoadDimensionOperator(
     task_id='Load_user_dim_table',
-    dag=dag
+    dag=dag,
+    table = 'users',
+    sql_insert_table = SqlQueries.user_table_insert,
+    insert_mode = 'truncate'
 )
 
 load_song_dimension_table = LoadDimensionOperator(
     task_id='Load_song_dim_table',
-    dag=dag
+    dag=dag,
+    table = 'songs',
+    sql_insert_table = SqlQueries.song_table_insert,
+    insert_mode = 'truncate'
 )
 
 load_artist_dimension_table = LoadDimensionOperator(
     task_id='Load_artist_dim_table',
-    dag=dag
+    dag=dag,
+    table = 'artists',
+    sql_insert_table = SqlQueries.artist_table_insert,
+    insert_mode = 'truncate'
 )
 
 load_time_dimension_table = LoadDimensionOperator(
     task_id='Load_time_dim_table',
-    dag=dag
+    dag=dag,
+    table = 'time',
+    sql_insert_table = SqlQueries.time_table_insert,
+    insert_mode = 'truncate'
 )
 
+#  need provide table lists to be Check quality
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
-    dag=dag
+    dag=dag,
+    tables = ["staging_events", "staging_songs", "songplays", "users", "songs", "artists", "time"]
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)

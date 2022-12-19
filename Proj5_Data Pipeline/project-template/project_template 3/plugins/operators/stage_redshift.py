@@ -3,6 +3,7 @@ from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
+# For"STAGING TABLES"
 class StageToRedshiftOperator(BaseOperator):
     ui_color = '#358140'
     template_fields = ("s3_key",)
@@ -11,8 +12,7 @@ class StageToRedshiftOperator(BaseOperator):
         FROM '{}'
         ACCESS_KEY_ID '{}'
         SECRET_ACCESS_KEY '{}'
-        DELIMITER '{}'
-    """
+        {} """
 
     # default params of operator
     # `redshift_conn_id` use same as "Conn Id" in Airflow Connections to Redshift Cluster console
@@ -35,16 +35,16 @@ class StageToRedshiftOperator(BaseOperator):
         self.s3_bucket = s3_bucket
         self.s3_key = s3_key
         self.filetype=filetype
-        self.aws_credentials_id = aws_credentials_id
 
 
     def execute(self, context):
-        self.log.info('StageToRedshiftOperator implementing here ...')
+        self.log.info('StageToRedshiftOperator is implementing here ...')
         aws_hook = AwsHook(self.aws_credentials_id)
         credentials = aws_hook.get_credentials()
         redshift_hook = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
         # adapt either json or csv
+        # with csv format: ignore the header line
         if (self.filetype=='json'):
             file_format=" json 'auto';"
         else:
@@ -70,4 +70,5 @@ class StageToRedshiftOperator(BaseOperator):
         logging.info(formatted_sql)
         redshift_hook.run(formatted_sql)
         logging.info("Data has pushed to Staging Tables")
+        logging.info("Finished Staging Data from S3, move to Load Fact table songplays ... >>>")
 
