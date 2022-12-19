@@ -2,8 +2,9 @@ from datetime import datetime, timedelta
 import os
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
+
 from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
-                                LoadDimensionOperator, DataQualityOperator)
+                                LoadDimensionOperator, DataQualityOperator, PostgresOperator)
 from helpers import SqlQueries
 
 # AWS_KEY = os.environ.get('AWS_KEY')
@@ -19,11 +20,11 @@ from helpers import SqlQueries
 default_args = {
     'depends_on_past': False,
     'owner': 'udacity',
-    'start_date': datetime(2022, 12, 18),
-    'email': ['vietdn1@fsoft.com.vn'],
+    'start_date': datetime(2022, 12, 19),
+    'email': ['vietdaongoc@gmail.com'],
     'email_on_retry': False,
     'email_on_failure': True,
-    'retries': 3,
+    'retries': 1,
     'retry_delay': timedelta(minutes=5),
 }
 
@@ -37,6 +38,15 @@ dag = DAG('udac_example_dag',
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
+# creat table if not exist
+
+creat_tables_task = PostgresOperator(
+    task_id='creat_tables',
+    dag=dag,
+    sql='create_tables.sql',
+    postgres_conn_id='redshift'
+)
+
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
     dag=dag,
@@ -45,6 +55,7 @@ stage_events_to_redshift = StageToRedshiftOperator(
     filetype='json'
 )
 
+#  try run with small data set in song log
 stage_songs_to_redshift = StageToRedshiftOperator(
     task_id='Stage_songs',
     dag=dag,
@@ -104,8 +115,10 @@ run_quality_checks = DataQualityOperator(
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 # Make task dependencies
-start_operator >> stage_events_to_redshift
-start_operator >> stage_songs_to_redshift
+start_operator >> creat_tables_task
+
+creat_tables_task >> stage_events_to_redshift
+creat_tables_task >> stage_songs_to_redshift
 
 stage_events_to_redshift >> load_songplays_table
 stage_songs_to_redshift >> load_songplays_table

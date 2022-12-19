@@ -71,4 +71,3 @@ class StageToRedshiftOperator(BaseOperator):
         redshift_hook.run(formatted_sql)
         logging.info("Data has pushed to Staging Tables")
         logging.info("Finished Staging Data from S3, move to Load Fact table songplays ... >>>")
-
