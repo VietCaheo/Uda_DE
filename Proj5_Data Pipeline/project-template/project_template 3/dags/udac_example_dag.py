@@ -21,16 +21,24 @@ default_args = {
     'depends_on_past': False,
     'owner': 'udacity',
     'start_date': datetime.now(),
+    'email': ['vietdaongoc@gmail.com'],
     'email_on_retry': False,
     'email_on_failure': False,
-    'retries': 1,
+    'retries': 3,
     'retry_delay': timedelta(minutes=5),
+    'dicts_checks': [
+                    {'test_sql': "SELECT COUNT(*) > 0 as count FROM users", 'expected_result': True},
+                    {'test_sql': "SELECT COUNT(*) > 0 as count FROM songs", 'expected_result': True},
+                    {'test_sql': "SELECT COUNT(*) > 0 as count FROM artists", 'expected_result': True},
+                    {'test_sql': "SELECT COUNT(*) > 0 as count FROM time", 'expected_result': True},
+                    {'test_sql': "SELECT COUNT(*) > 0 as count FROM songplays", 'expected_result': True}]
 }
 
 
 dag = DAG('udac_example_dag',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
+          schedule_interval='@hourly',
           catchup=False
         )
 
@@ -109,8 +117,8 @@ load_time_dimension_table = LoadDimensionOperator(
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
     dag=dag,
-    tables = ["staging_events", "staging_songs", "songplays", "users", "songs", "artists", "time"]
-    # tables = ["songplays", "users", "songs", "artists", "time"]
+    tables = ["staging_events", "staging_songs", "songplays", "users", "songs", "artists", "time"],
+    dq_checks=default_args['dicts_checks']
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)

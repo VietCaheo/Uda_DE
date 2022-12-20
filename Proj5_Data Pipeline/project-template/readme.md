@@ -1,3 +1,5 @@
+/opt/airflow/start.sh
+
 # Data Pipelines with Airflow
 ## Purpose of project:
     -> To apply a automation and monitoring to their data warehouse ETL pipelines : Apache Airflow/
@@ -45,6 +47,24 @@ Building the Operators to: Stage / Transform/ Run check
     -> final operator to run checks on the data itself
     -> to run as some test cases ...
 
+
+### referrence points:
+https://knowledge.udacity.com/questions/256441
+
+<!-- issue with template field -->
+https://knowledge.udacity.com/questions/61537
+
+<!-- issue with load_fact   -->
+https://knowledge.udacity.com/questions/792553
+
+<!-- creat tables issue -->
+https://knowledge.udacity.com/questions/60209
+
+<!-- issue with default_postgre conn Id -->
+https://knowledge.udacity.com/questions/476414
+
+<!-- issue with NULL value playid -->
+https://knowledge.udacity.com/questions/325028
 
 
 

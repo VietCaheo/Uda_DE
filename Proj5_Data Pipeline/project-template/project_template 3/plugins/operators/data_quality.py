@@ -8,18 +8,22 @@ class DataQualityOperator(BaseOperator):
 
     ui_color = '#89DA59'
 
+
     # Init to test a single table in a table list
     @apply_defaults
     def __init__(self,
                  aws_credentials_id="aws_credentials",
                  redshift_conn_id="redshift",
                  tables=[],
+                 dq_checks="",
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
         self.aws_credentials_id=aws_credentials_id
         self.redshift_conn_id = redshift_conn_id
         self.tables = tables
+        self.dq_checks = dq_checks
+
 
     # target to check:
     # contains NULL values by counting all the rows that have NULL in the column.
@@ -38,11 +42,15 @@ class DataQualityOperator(BaseOperator):
             record_list = redshift_hook.get_records(table_record)
 
             # could not fetch any row, or first row is empty
-            if len(record_list) or len(record_list[0])< 1:
+            if len(record_list)==0 or len(record_list[0])< 1:
                 raise ValueError("Check failed. {} returned no table record".format(table))
 
-            # the first field in 1st row is empty
-            if (len(record_list[0][0]) < 1):
-                raise ValueError("Check failed. table {} has nothing row".format(table))
+        for dq_check in self.dq_checks:
+            t_sql = dq_check['test_sql']
+            records = redshift_hook.get_records(t_sql)[0][0]
+
+            if (dq_check['expected_result'] != records):
+                raise ValueError("Data quality check failed in table row count should > 0 .........")
+            
 
         self.log.info("Finished DataQuality check for table list {}".format(self.tables))

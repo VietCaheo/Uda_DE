@@ -73,8 +73,9 @@ CREATE TABLE IF NOT EXISTS public."time" (
 	CONSTRAINT time_pkey PRIMARY KEY (start_time)
 ) ;
 
--- Drop the un-expected data firstly
-DROP TABLE public.users;
+-- Drop the un-expected data firstly, 
+-- this for workaround with issue unexpected char(8) has existed somehow
+-- DROP TABLE public.users;
 
 CREATE TABLE IF NOT EXISTS public.users (
 	userid int4 NOT NULL,
