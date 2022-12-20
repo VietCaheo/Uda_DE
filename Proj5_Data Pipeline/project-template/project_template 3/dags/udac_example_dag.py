@@ -68,7 +68,10 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     dag=dag,
     table='staging_songs',
     region="us-west-2",
-    s3_key="song_data/A/A/A",
+    # for small data set: take ~1 second for staging
+    # s3_key="song_data/A/A/A",
+    # for full song data files: take ~30 mins for staging
+    s3_key="song_data",
     s3_json_path = "auto"
 )
 

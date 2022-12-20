@@ -1,4 +1,4 @@
-/opt/airflow/start.sh
+
 
 # Data Pipelines with Airflow
 ## Purpose of project:
@@ -14,9 +14,8 @@ To introduce core concepts of Apache Airflow:
     + filling the data warehouse.
     + running check the data in the final stl
 [Help]:
-    + four empty operators: to implement into functional pieces of a data pipeline.
-    + set of tasks: need to be linked to achieve a coherent and sensible data flow within the pipeline.
-    + contains all the SQL transformations
+    + creat_tables.sql: complete CREAT TABLE sql command  that can be you directly in Redshift console for creating tables
+    + SQL transformations
 [Prerequisites]:
     + Create an IAM User 
     + Create Redshift Cluster in AWS
@@ -65,6 +64,23 @@ https://knowledge.udacity.com/questions/476414
 
 <!-- issue with NULL value playid -->
 https://knowledge.udacity.com/questions/325028
+
+### Note about project:
+    -> Creat IAM users and Redshift Cluster: should be keep same btw IAM username and Redshift cluster (Database user name): just for easy tracking when set up connection later.
+    -> Each time re-creat Redshift Cluster: should choose Database user name and Password different clearly with old one (otherwise, error with subnet mask coming )
+    -> When "reset data" in workspace and Run new session with AirFlow; or long time come back to wspace : 
+        + It need to Creat Connection Again with AirFlow for both : AWS IAM conection and RedShift Cluster Connection.
+
+    -> Note about small data song log with (Ex: A/A/A : it takes only few seconds to staging, if full song_data/: takes ~30mins for staging job)
+    -> Each time delete Redshift Cluster and re-create with new one, it need to creat all tables  again with completed SQL commands in creat_tables.sql
+        There are two way to re creat tables:
+            + [way 1]: Copy the creat_tables file into same folder with _dag.py, and add the creat table dag task in _dag schenarino (not suggestion by mentor)
+            + [say 2]: After create and config successfully for Redshift Cluster: using Query_Editor in Redshift Cluster console, and run the creat tables SQL command (See snap shot attached)
+    -> Sometime: there are some unexpected data or config come to AirFlow working enviroment or Redshift Cluster:
+        + Need to reset data in workspace 
+        + Re create connection between AirFlow and AWS IAM ; Redshift Cluster.
+        + Do run again
+        + some like above referrence points above.
 
 
 
