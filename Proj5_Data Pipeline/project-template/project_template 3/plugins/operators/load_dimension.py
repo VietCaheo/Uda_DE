@@ -39,4 +39,3 @@ class LoadDimensionOperator(BaseOperator):
 
         self.log.info("<<<<<<<<<<<<<<<<< .......................Finished to loading dim_table {}".format(self.table))
         self.log.info("Move to Run Quality Check ... >>>")
-

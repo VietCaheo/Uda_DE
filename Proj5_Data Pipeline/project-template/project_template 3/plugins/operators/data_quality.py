@@ -31,25 +31,11 @@ class DataQualityOperator(BaseOperator):
         self.log.info('DataQualityOperator is implementing ... ')
         redshift_hook=PostgresHook(self.redshift_conn_id)
 
-        # loop all table to be tested
-        for table in self.tables:
-            self.log.info("Print the testing table {}".format(table))
-            table_record = "SELECT COUNT(*) FROM {}".format(table)
-
-            # fetching list of record from testing table
-            # record to be fetched with:
-            # 1st index is row, 2nd index: field in the row
-            record_list = redshift_hook.get_records(table_record)
-
-            # could not fetch any row, or first row is empty
-            if len(record_list)==0 or len(record_list[0])< 1:
-                raise ValueError("Check failed. {} returned no table record".format(table))
-
         for dq_check in self.dq_checks:
             t_sql = dq_check['test_sql']
             records = redshift_hook.get_records(t_sql)[0][0]
 
-            if (dq_check['expected_result'] != records):
+            if (dq_check['expected_result'] == records):
                 raise ValueError("Data quality check failed in table row count should > 0 .........")
             
 

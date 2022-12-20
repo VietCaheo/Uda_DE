@@ -27,11 +27,11 @@ default_args = {
     'retries': 3,
     'retry_delay': timedelta(minutes=5),
     'dicts_checks': [
-                    {'test_sql': "SELECT COUNT(*) > 0 as count FROM users", 'expected_result': True},
-                    {'test_sql': "SELECT COUNT(*) > 0 as count FROM songs", 'expected_result': True},
-                    {'test_sql': "SELECT COUNT(*) > 0 as count FROM artists", 'expected_result': True},
-                    {'test_sql': "SELECT COUNT(*) > 0 as count FROM time", 'expected_result': True},
-                    {'test_sql': "SELECT COUNT(*) > 0 as count FROM songplays", 'expected_result': True}]
+                    {'test_sql': "SELECT COUNT(*) FROM users", 'expected_result': 0},
+                    {'test_sql': "SELECT COUNT(*) FROM songs", 'expected_result': 0},
+                    {'test_sql': "SELECT COUNT(*) FROM artists", 'expected_result': 0},
+                    {'test_sql': "SELECT COUNT(*) FROM time", 'expected_result': 0},
+                    {'test_sql': "SELECT COUNT(*) FROM songplays", 'expected_result': 0}]
 }
 
 
@@ -45,12 +45,12 @@ dag = DAG('udac_example_dag',
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
 # creat tables if not exist
-creat_tables_task = PostgresOperator(
-    task_id='creat_tables',
-    dag=dag,
-    sql='create_tables.sql',
-    postgres_conn_id='redshift'
-)
+# creat_tables_task = PostgresOperator(
+#     task_id='creat_tables',
+#     dag=dag,
+#     sql='create_tables.sql',
+#     postgres_conn_id='redshift'
+# )
 
 # Note: it's existing log json path of log data
 stage_events_to_redshift = StageToRedshiftOperator(
@@ -124,10 +124,8 @@ run_quality_checks = DataQualityOperator(
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 # Make task dependencies
-start_operator >> creat_tables_task
-
-creat_tables_task >> stage_events_to_redshift
-creat_tables_task >> stage_songs_to_redshift
+start_operator >> stage_events_to_redshift
+start_operator >> stage_songs_to_redshift
 
 stage_events_to_redshift >> load_songplays_table
 stage_songs_to_redshift >> load_songplays_table
